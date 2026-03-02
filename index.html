@@ -20,6 +20,12 @@ body {
   user-select: none;
 }
 h1 { font-size: 1.4em; margin: 8px 0; color: #ff69b4; letter-spacing: 4px; }
+#content-wrap {
+  transform-origin: top center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 #game-area {
   display: flex;
   gap: 8px;
@@ -101,6 +107,7 @@ canvas#board { border: 2px solid #ff69b4; border-radius: 2px; display: block; }
   <p>Tap to start</p>
 </div>
 
+<div id="content-wrap">
 <h1>TETRIS</h1>
 <div id="game-area">
   <div class="side-panel">
@@ -129,6 +136,7 @@ canvas#board { border: 2px solid #ff69b4; border-radius: 2px; display: block; }
   <button class="ctrl-btn" id="btn-left">&larr;</button>
   <button class="ctrl-btn" id="btn-down">&darr;</button>
   <button class="ctrl-btn" id="btn-right">&rarr;</button>
+</div>
 </div>
 
 <script>
@@ -612,6 +620,17 @@ overlay.addEventListener('touchstart', e => { e.preventDefault(); overlay.classL
 
 // Restart on game over canvas tap
 boardCanvas.addEventListener('click', () => { if (gameOver && running) startGame(); });
+
+// Responsive scaling
+function fitToScreen() {
+  const wrap = document.getElementById('content-wrap');
+  const totalW = 436; // 90 + 8 + 240 + 8 + 90
+  const avail = window.innerWidth - 8;
+  const s = Math.min(1, avail / totalW);
+  wrap.style.transform = 'scale(' + s + ')';
+}
+window.addEventListener('resize', fitToScreen);
+fitToScreen();
 
 // Initial render
 clearGrid();
