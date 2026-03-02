@@ -417,11 +417,20 @@ function render() {
 }
 
 // === MUSIC: Hard Bass Korobeiniki via Web Audio API ===
-let audioCtx = null, musicSource = null;
-function initMusic() {
-  if (audioCtx) { audioCtx.resume(); return; }
-  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+let audioCtx = null, musicSource = null, musicBuffer = null;
+function unlockAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  // Play a silent buffer to unlock iOS audio
+  const silent = audioCtx.createBuffer(1, 1, audioCtx.sampleRate);
+  const src = audioCtx.createBufferSource();
+  src.buffer = silent;
+  src.connect(audioCtx.destination);
+  src.start(0);
   audioCtx.resume();
+}
+function initMusic() {
+  unlockAudio();
+  if (musicBuffer) { playBuffer(musicBuffer); return; }
   const sr = audioCtx.sampleRate;
   const bpm = 160;
   const beat = 60 / bpm;
@@ -526,16 +535,17 @@ function initMusic() {
     data[i] = Math.tanh(data[i] * 1.5) * 0.8;
   }
 
+  musicBuffer = buffer;
   playBuffer(buffer);
 }
 
-function playBuffer(buffer) {
+function playBuffer(buf) {
   if (musicSource) { try { musicSource.stop(); } catch(e) {} }
   musicSource = audioCtx.createBufferSource();
-  musicSource.buffer = buffer;
+  musicSource.buffer = buf;
   musicSource.loop = true;
   musicSource.connect(audioCtx.destination);
-  musicSource.start();
+  musicSource.start(0);
 }
 function stopMusic() {
   if (musicSource) { try { musicSource.stop(); } catch(e) {} musicSource = null; }
@@ -615,8 +625,8 @@ bindBtn('btn-drop', () => hardDrop());
 
 // Start overlay
 const overlay = document.getElementById('start-overlay');
-overlay.addEventListener('click', () => { overlay.classList.add('hidden'); startGame(); });
-overlay.addEventListener('touchstart', e => { e.preventDefault(); overlay.classList.add('hidden'); startGame(); }, { passive: false });
+overlay.addEventListener('click', () => { unlockAudio(); overlay.classList.add('hidden'); startGame(); });
+overlay.addEventListener('touchstart', e => { e.preventDefault(); unlockAudio(); overlay.classList.add('hidden'); startGame(); }, { passive: false });
 
 // Restart on game over canvas tap
 boardCanvas.addEventListener('click', () => { if (gameOver && running) startGame(); });
