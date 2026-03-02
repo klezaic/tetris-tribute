@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/src/Color.php';
+require_once __DIR__ . '/src/Tetromino.php';
+require_once __DIR__ . '/src/Rotation.php';
+require_once __DIR__ . '/src/Board.php';
+require_once __DIR__ . '/src/Piece.php';
+require_once __DIR__ . '/src/Scoring.php';
+require_once __DIR__ . '/src/Input.php';
+require_once __DIR__ . '/src/Renderer.php';
+require_once __DIR__ . '/src/Music.php';
+require_once __DIR__ . '/src/Game.php';
+
+Tetris\Game::run();
