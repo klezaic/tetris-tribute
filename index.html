@@ -411,8 +411,9 @@ function render() {
 // === MUSIC: Hard Bass Korobeiniki via Web Audio API ===
 let audioCtx = null, musicSource = null;
 function initMusic() {
-  if (audioCtx) return;
+  if (audioCtx) { audioCtx.resume(); return; }
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  audioCtx.resume();
   const sr = audioCtx.sampleRate;
   const bpm = 160;
   const beat = 60 / bpm;
